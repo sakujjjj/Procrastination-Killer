@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Procrastination-Killer</title>
 
 
 
@@ -21,8 +21,19 @@
       border: 1px solid #ccc;
     }
 
+    .legend-item {
+      display: inline-block;
+      width: 50px;
+      height: 20px;
+      margin-right: 10px;
+      cursor: pointer;
+      /* opacity: 0.8; */
+    }
+
     .selected {
-      border: 2px solid rgb(235, 247, 0);
+      /* border: 2px solid rgb(247, 62, 0); */
+      transform: scale(1.1);
+      /* opacity: 10; */
     }
   </style>
 </head>
@@ -69,9 +80,9 @@
 
       // Color legend mapping (color => activity)
       var colorLegend = {
-        yellow: 'Sleep',
-        green: 'Work',
-        blue: 'Play'
+        '#FF4081': 'Sleep',
+        '#FFC107': 'Work',
+        '#03A9F4': 'Play',
       };
 
       // Generate color legend items
@@ -82,8 +93,13 @@
         var legendItem = document.createElement('div');
         legendItem.className = 'legend-item';
         legendItem.style.backgroundColor = color;
+        legendItem.style.color = 'white'; // Set the font color to white
         legendItem.textContent = activity;
         legendItem.addEventListener('click', handleLegendItemClick);
+        // Add CSS styles for vertical alignment
+        legendItem.style.display = 'flex';
+        // legendItem.style.alignItems = 'center';
+        legendItem.style.justifyContent = 'center';
         legend.appendChild(legendItem);
       }
       document.body.appendChild(legend);
@@ -99,14 +115,49 @@
       // Function to handle legend item click
       function handleLegendItemClick() {
         var legendItems = document.getElementsByClassName('legend-item');
-        // Remove selected class from all legend items
+        var isAlreadySelected = this.classList.contains('selected');
+
+        // Reset injected color if the clicked item was already selected
+        if (isAlreadySelected) {
+          injectedColor = null;
+        }
+
+        // Remove selected class and reset border for all legend items
         for (var i = 0; i < legendItems.length; i++) {
           legendItems[i].classList.remove('selected');
+          legendItems[i].style.border = 'none';
         }
-        // Add selected class to the clicked legend item
-        this.classList.add('selected');
-        selectedColor = this.style.backgroundColor;
-        selectedLegendItem = this;
+
+        // If the clicked item was not already selected, add selected class and set border color
+        if (!isAlreadySelected) {
+          this.classList.add('selected');
+          this.style.border = '2px solid ' + this.style.backgroundColor;
+          selectedColor = this.style.backgroundColor;
+          selectedLegendItem = this;
+
+          // Reset injected color if another item was previously selected
+          if (injectedColor && injectedColor !== selectedColor) {
+            injectedColor = null;
+          }
+        } else {
+          selectedColor = null;
+          selectedLegendItem = null;
+        }
+      }
+
+      // Add event listener to color legend items for toggling selected class
+      var legendItems = document.getElementsByClassName('legend-item');
+      for (var i = 0; i < legendItems.length; i++) {
+        legendItems[i].addEventListener('click', function () {
+          // Remove selected class from all legend items
+          for (var j = 0; j < legendItems.length; j++) {
+            legendItems[j].classList.remove('selected');
+          }
+          // Add selected class to the clicked legend item
+          this.classList.add('selected');
+          selectedColor = this.style.backgroundColor;
+          selectedLegendItem = this;
+        });
       }
 
       // Function to add a new color to the legend
@@ -121,44 +172,30 @@
           legendItem.className = 'legend-item';
           legendItem.style.backgroundColor = newColor;
           legendItem.textContent = newActivity;
+          legendItem.style.color = 'white'; // Set the font color to white
           legendItem.addEventListener('click', handleLegendItemClick);
+          legendItem.style.display = 'flex';
+          // legendItem.style.alignItems = 'center';
+          legendItem.style.justifyContent = 'center';
           document.getElementById('legend').appendChild(legendItem);
         }
       }
     </script>
   </table>
 
-  <h3>Color Legend:</h3>
+  <!-- <h3>Color Legend:</h3>
   <div id="legend">
     <div class="legend-item" style="background-color: yellow;">Sleep</div>
     <div class="legend-item" style="background-color: green;">Work</div>
     <div class="legend-item" style="background-color: blue;">Play</div>
-  </div>
+  </div> -->
 
   <h3>Add New Color:</h3>
   <input type="color" id="newColor" />
   <input type="text" id="newActivity" placeholder="Activity" />
   <button onclick="addNewColor()">Add Color</button>
 
-  <!-- <script>
-    // Function to add a new color to the legend
-    function addNewColor() {
-      var newColor = document.getElementById('newColor').value;
-      var newActivity = document.getElementById('newActivity').value;
 
-      if (newColor && newActivity) {
-        colorLegend[newColor] = newActivity;
-
-        var legendItem = document.createElement('div');
-        legendItem.className = 'legend-item';
-        legendItem.style.backgroundColor = newColor;
-        legendItem.textContent = newActivity;
-        legendItem.draggable = true;
-        legendItem.addEventListener('dragstart', handleDragStart);
-        document.getElementById('legend').appendChild(legendItem);
-      }
-    }
-  </script> -->
 </body>
 
 </html>
