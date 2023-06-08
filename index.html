@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+
+
+
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+
+    td {
+      width: 50px;
+      height: 20px;
+      border: 1px solid #ccc;
+    }
+
+    .selected {
+      border: 2px solid rgb(235, 247, 0);
+    }
+  </style>
+</head>
+
+<body>
+  <table>
+    <tr>
+      <th>Time</th>
+      <th>星期一</th>
+      <th>星期二</th>
+      <th>星期三</th>
+      <th>星期四</th>
+      <th>星期五</th>
+      <th>星期六</th>
+      <th>星期日</th>
+    </tr>
+    <!-- Create rows for each time interval -->
+    <script>
+      // Define the time intervals (30-minute intervals from 00:00 to 23:59)
+      var intervals = [];
+      var startTime = new Date();
+      startTime.setHours(0, 0, 0, 0); // Set start time to 00:00
+      for (var i = 0; i < 48; i++) {
+        var time = new Date(startTime.getTime() + i * 30 * 60 * 1000);
+        var interval = ('0' + time.getHours()).slice(-2) + ':' + ('0' + time.getMinutes()).slice(-2);
+        intervals.push(interval);
+      }
+
+      // Generate the table rows
+      for (var j = 0; j < intervals.length; j++) {
+        var row = document.createElement('tr');
+        var timeCell = document.createElement('td');
+        timeCell.textContent = intervals[j];
+        row.appendChild(timeCell);
+        for (var k = 0; k < 7; k++) {
+          var dataCell = document.createElement('td');
+          // Set up event listeners to handle color injection
+          dataCell.addEventListener('mouseover', handleColorInjection);
+          dataCell.addEventListener('mousedown', handleColorInjection);
+          row.appendChild(dataCell);
+        }
+        document.querySelector('table').appendChild(row);
+      }
+
+      // Color legend mapping (color => activity)
+      var colorLegend = {
+        yellow: 'Sleep',
+        green: 'Work',
+        blue: 'Play'
+      };
+
+      // Generate color legend items
+      var legend = document.createElement('div');
+      legend.id = 'legend';
+      for (var color in colorLegend) {
+        var activity = colorLegend[color];
+        var legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        legendItem.style.backgroundColor = color;
+        legendItem.textContent = activity;
+        legendItem.addEventListener('click', handleLegendItemClick);
+        legend.appendChild(legendItem);
+      }
+      document.body.appendChild(legend);
+      var selectedColor = '';
+      var selectedLegendItem = null;
+
+      // Function to handle color injection
+      function handleColorInjection(event) {
+        if (event.buttons !== 1 || !selectedColor) return; // Check if left mouse button is pressed and color is selected
+        this.style.backgroundColor = selectedColor;
+      }
+
+      // Function to handle legend item click
+      function handleLegendItemClick() {
+        var legendItems = document.getElementsByClassName('legend-item');
+        // Remove selected class from all legend items
+        for (var i = 0; i < legendItems.length; i++) {
+          legendItems[i].classList.remove('selected');
+        }
+        // Add selected class to the clicked legend item
+        this.classList.add('selected');
+        selectedColor = this.style.backgroundColor;
+        selectedLegendItem = this;
+      }
+
+      // Function to add a new color to the legend
+      function addNewColor() {
+        var newColor = document.getElementById('newColor').value;
+        var newActivity = document.getElementById('newActivity').value;
+
+        if (newColor && newActivity) {
+          colorLegend[newColor] = newActivity;
+
+          var legendItem = document.createElement('div');
+          legendItem.className = 'legend-item';
+          legendItem.style.backgroundColor = newColor;
+          legendItem.textContent = newActivity;
+          legendItem.addEventListener('click', handleLegendItemClick);
+          document.getElementById('legend').appendChild(legendItem);
+        }
+      }
+    </script>
+  </table>
+
+  <h3>Color Legend:</h3>
+  <div id="legend">
+    <div class="legend-item" style="background-color: yellow;">Sleep</div>
+    <div class="legend-item" style="background-color: green;">Work</div>
+    <div class="legend-item" style="background-color: blue;">Play</div>
+  </div>
+
+  <h3>Add New Color:</h3>
+  <input type="color" id="newColor" />
+  <input type="text" id="newActivity" placeholder="Activity" />
+  <button onclick="addNewColor()">Add Color</button>
+
+  <!-- <script>
+    // Function to add a new color to the legend
+    function addNewColor() {
+      var newColor = document.getElementById('newColor').value;
+      var newActivity = document.getElementById('newActivity').value;
+
+      if (newColor && newActivity) {
+        colorLegend[newColor] = newActivity;
+
+        var legendItem = document.createElement('div');
+        legendItem.className = 'legend-item';
+        legendItem.style.backgroundColor = newColor;
+        legendItem.textContent = newActivity;
+        legendItem.draggable = true;
+        legendItem.addEventListener('dragstart', handleDragStart);
+        document.getElementById('legend').appendChild(legendItem);
+      }
+    }
+  </script> -->
+</body>
+
+</html>
