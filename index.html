@@ -55,7 +55,7 @@
       // Define the time intervals (30-minute intervals from 00:00 to 23:59)
       var intervals = [];
       var startTime = new Date();
-      startTime.setHours(0, 0, 0, 0); // Set start time to 00:00
+      startTime.setHours(6, 0, 0, 0); // Set start time to 00:00
       for (var i = 0; i < 48; i++) {
         var time = new Date(startTime.getTime() + i * 30 * 60 * 1000);
         var interval = ('0' + time.getHours()).slice(-2) + ':' + ('0' + time.getMinutes()).slice(-2);
